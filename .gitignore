@@ -1,0 +1,11 @@
+# emacs
+*~
+
+# python
+__pycache__/
+.pytest_cache/
+.benchmarks/
+
+# rust
+target/
+Cargo.lock
