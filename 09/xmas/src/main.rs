@@ -57,20 +57,24 @@ fn find_first_invalid(data: &[i64], n: usize) -> Option<i64> {
 
 
 fn find_range_totaling(data: &[i64], tgt: i64) -> (usize, usize) {
-    // integrate for constant time range sums
-    let acc: Vec<_> = data.iter()
-        .scan(0, |a, &x| {
-            let a0 = *a;
-            *a += x;
-            Some(a0)
-        })
-        .collect();
+    // subtract iterator => start of integration window
+    let mut subit = data.iter().enumerate();
+    let mut i = 0;
+    let mut acc = 0;
 
-    for (i, &ax) in acc.iter().enumerate() {
-        for (j, &ay) in acc[i+2..].iter().enumerate() {
-            if ay == ax + tgt {
-                return (i, i+2+j);
-            }
+    // add iteration => end of integration window
+    for (j, x) in data.iter().enumerate() {
+        assert!(acc < tgt);
+        acc += x;			// open window
+
+        while acc > tgt {
+            let (k, y) = subit.next().unwrap();
+            acc -= y;			// close window
+            i = k + 1;
+        }
+
+        if acc == tgt && j > i+2 {
+            return (i, j+1);
         }
     }
 

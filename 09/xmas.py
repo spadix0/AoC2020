@@ -40,13 +40,23 @@ def find_first_invalid(data, n=25):
 
 
 def find_range_totaling(data, tgt):
-    # integrate for constant time range sums
-    acc = array('q', accumulate(data, initial=0))
+    # subtract iterator => start of integration window
+    subit = enumerate(data)
+    acc, i = 0, -1
 
-    for i in range(len(data)-2):
-        for j in range(i+2, len(data)):
-            if acc[j] == acc[i] + tgt:
-                return i, j
+    # add iteration => end of integration window
+    for j, x in enumerate(data):
+        assert acc < tgt
+        acc += x			# open window
+
+        if acc > tgt:
+            for i, y in subit:
+                acc -= y		# close window
+                if acc <= tgt:
+                    break
+
+        if acc == tgt and j >= i+2:
+            return i+1, j+1
 
 
 def calc_weakness(data):
